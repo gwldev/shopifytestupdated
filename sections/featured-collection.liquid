@@ -1,0 +1,128 @@
+{% comment %}
+------------------------------------------------------------------------------
+Section: Featured collection
+- This the main section that you should be working on
+- Main styling is done in /styles/sections/featured-collection.scss
+------------------------------------------------------------------------------
+{% endcomment %}
+
+<section class="featured-collection featured_collection container" data-section-id="{{ section.id }}" data-section-type="featured-collection">
+  <h2>{{ section.settings.title }}</h2>
+  {%- assign collection = collections[section.settings.collection] -%}
+  <div class="regular slider">
+    {% for product in collection.products limit: 6 %}    
+    <div class="position-relative">
+      <div class="position-relative product-img">
+        {% if product.featured_image != blank %}
+        {{ product.featured_image | img_url: 'master' | img_tag }}
+        {% endif %}
+        <span class="new-tag">{% if product.compare_at_price_min > 0 %}Sale{% else %}New{% endif %}</span>  
+        <button type="button" class="btn custom-quick-btn" data-toggle="modal" data-target="#product-modal-{{ product.id }}">{{ 'products.product.quick_view' | t }}</button> 
+      </div>
+      <h4>{{ product.title }}</h4>
+      <p>          
+        {% include 'product-price' %}
+      </p>  
+    </div>    
+    {% endfor %}
+  </div>  
+</section>
+<!-- Start Product Modal -->
+{% for product in collection.products limit: 6 %}    
+<div class="product_model modal fade" id="product-modal-{{ product.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <button type="button" class="close close-btn" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span> 
+        </button>
+        <div class="row">
+          <div class="col-sm-6 d-flex align-items-center">
+            <img src="{{ product.featured_image | img_url: '569X769' }}" alt="img" class="img-fluid" />
+          </div>
+          <div class="col-sm-6 d-flex">
+            <div class="product-right-modal-section align-self-center">
+              <h2 class="product_title">{{ product.title }}</h2>
+              <p class="product-modal-price">
+                {% include 'product-price' %}
+              </p>
+              <p class="product-modal-detail">
+                {{ product.description }}
+              </p>
+              <p class="sku-detail">SKU: {{ product.variants.first.sku }}</p>
+              <p class="results"></p>
+              <div class="product-cart-bottom-section d-flex">
+                <form action="/cart/add" data-productid="{{product.id}}" method="post" class="product-form" id="AddToCartForm">
+                  <div class="quantity buttons_added product-umber">
+                    <input type="button" value="" class="minus">
+                    <input type="number" step="1" min="1" max="" name="quantity" value="1" title="Qty" class="input-text qty text quantity_selector" size="4" pattern="" inputmode="">
+                    <input type="button" value="" class="plus">
+                  </div>
+                  <button type="button" name="add" value="{{ 'cart.general.button_title' | t }}" pro_id="{{ product.variants.first.id }}" class="btn custom-cart-btn btn-effect">{{ 'cart.general.button_title' | t }}</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+<script>
+  $.getJSON('/cart.js', function(cart) {
+    $("span.cart_item_counter_data").text(cart.item_count);
+  });
+  $(".product-cart-bottom-section button.btn.custom-cart-btn.btn-effect").on("click",function(){ 
+    var cart_message = "{{ 'cart.general.savings' | t }}";
+    var cart_save_message = "{{ 'cart.general.saved' | t }}";
+    $(".results").text(cart_message);
+    var current_cart_item = $("span.cart_item_counter_data").text();
+    var current_cart_item1 = Number(current_cart_item);  
+    $(this).parents().find(".product_model").removeClass("current_active_model");
+    var pro_var_id = $(this).attr("pro_id"); 
+    var pro_quantity = $(this).parents().find(".quantity_selector").val();
+    var pro_quantity1 = Number(pro_quantity);
+    var updated_cart_item = current_cart_item1 + pro_quantity1;  
+    jQuery.post('/cart/add.js', {
+      quantity: pro_quantity,
+      id: pro_var_id,
+    });
+    var ele_id = $(this).parents().find(".product_model").addClass("current_active_model").attr("id");
+    $("span.cart_item_counter_data").text(updated_cart_item);
+    setTimeout(function(){
+      $.getJSON('/cart.js', function(cart) {
+        $(".results").text(cart_save_message);
+        $("span.cart_item_counter_data").text(cart.item_count);
+        $(".current_active_model button.close.close-btn").trigger("click");  
+        $(".results").text('');
+      });
+    },1000);
+
+  });
+</script>
+    <!-- End Product Modal -->
+{% schema %}
+  {
+    "name": "Featured collection",
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Featured collection"
+      },
+      {
+        "id": "collection",
+        "type": "collection",
+        "label": "Collection"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Featured collection",
+        "category": "Collection"
+      }
+    ]
+  }
+{% endschema %}

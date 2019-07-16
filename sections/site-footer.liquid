@@ -1,0 +1,15 @@
+<footer class="footer d-flex align-items-center p-0 w-100">
+  <div class="container">{{ section.settings.copy_text }}</div>
+</footer>
+{% schema %}
+{
+  "name": "Footer",
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "copy_text",
+      "label":"Copyright text"
+    }
+  ]
+}
+{% endschema %}

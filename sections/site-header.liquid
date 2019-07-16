@@ -1,0 +1,210 @@
+<section data-section-id="{{ section.id }}" data-section-type="header">
+  <header>
+    {%- if section.settings.announcement_bar_enabled -%}
+    <div class="top-header d-flex justify-content-center">
+      <span class="align-self-center">
+        {{ section.settings.announcement_bar_text | escape }}
+      </span>
+    </div>
+    {%- endif -%}
+    <nav class="navbar navbar-dark navbar-expand-md bg-white justify-content-between">
+      <div class="container-fluid">
+        <button class="navbar-toggler" type="button"> 
+          <div class="container" onclick="myFunction(this)">
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3"></div>
+          </div>
+        </button>
+        <div class="navbar-collapse collapse dual-nav w-50 order-1 order-md-0">
+          <ul class="navbar-nav">
+            {% for link in linklists.main-menu.links %}
+            <li class="nav-item active {% if link.title == 'Shop' %}dropdown{% endif %}"> 
+              <a class="nav-link pl-0 main-nav-links {% if link.title == 'Shop' %}shop-link{% endif %} collapsed" data-toggle="collapse" aria-expanded="false" href="#demo">{{ link.title }}</a>
+              {% if link.title == 'Shop' %}
+              <div class="dropdown-menu collapse" id="demo">
+                <div class="megamenu">
+                  <div class="container pl-0 pr-0">
+                    <div class="row">
+                      <div class="col-sm-5">
+                        <div class="row">
+                          <div class="col-sm-5">
+                            <ul class="list-group">
+                              {% for link in linklists[section.settings.first_mega_menu].links %}                
+                              <li class="list-group-item">
+                                <a href="{{ link.url }}">{{ link.title }}</a>
+                              </li>
+                              {% endfor %}
+                            </ul>
+                          </div>
+                          <div class="col-sm-7 pl-md-0">
+                            <ul class="list-group">
+                              {% for link in linklists[section.settings.second_mega_menu].links %}                
+                              <li class="list-group-item">
+                                <a href="{{ link.url }}">{{ link.title }}</a>
+                              </li>
+                              {% endfor %}
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                      <!-- /.col-md-4 -->
+                      <div class="col-sm-7">
+                        <div class="row gutter-10">
+                          <div class="col-sm-6">
+                            <div class="head-img-section"> <img src="{{ section.settings.image1 | img_url:'master' }}" alt="img" class="img-fluid">
+                              <button type="button" class="btn custom-megamenu-btn" tabindex="0">{{ section.settings.image1_text }}</button>
+                            </div>
+                          </div>
+                          <div class="col-sm-6">
+                            <div class="head-img-section"> <img src="{{ section.settings.image2 | img_url:'master' }}" alt="img" class="img-fluid">
+                              <button type="button" class="btn custom-megamenu-btn " tabindex="0">{{ section.settings.image2_text }}</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <!-- /.col-md-4 --> 
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+            </li>
+            {% endfor %}            
+          </ul>
+        </div>
+        <ul class="nav navbar-nav mr-auto right-icons left-search-icon">
+          <li class="nav-item"><a class="nav-link" href=""><img src="{{ 'search.svg' | asset_url }}" class="img-fluid" alt="logo" /></a></li>
+        </ul> 
+        <a href="/" class="logo-image navbar-brand mx-auto d-block text-center order-0 order-md-1 w-25">
+          {% if section.settings.logo != blank %}
+          {% capture image_size %}{{ section.settings.logo_max_width }}x{% endcapture %}
+          <img src="{{ section.settings.logo | img_url: '100X40' }}" class="img-fluid" alt="logo" />            
+          {% else %}
+          {{ shop.name }}
+          {% endif %}
+        </a>
+        <div class="dual-nav visible-mobile">
+        </div>
+        <div class="dual-nav visible-mobile">
+          <ul class="nav navbar-nav ml-auto right-icons">
+            <li class="nav-item"><a class="nav-link" href=""><img src="{{ 'user.svg' | asset_url }}" class="img-fluid" alt="logo" /></a></li>
+            <li class="nav-item"><a class="nav-link counter_cart_item" href="/cart"><img src="{{ 'cart-bag.svg' | asset_url }}" class="img-fluid" alt="logo" /><span class="cart_item_counter_data">0</span></a></li>
+          </ul>
+        </div>
+        <div class="navbar-collapse w-50 collapse dual-nav order-2 bottom-nav-link">
+          <ul class="nav navbar-nav ml-auto right-icons">
+            <li class="nav-item"><a class="nav-link" href=""><img src="{{ 'search.svg' | asset_url }}" class="img-fluid" alt="logo" /></a></li>
+            <li class="nav-item"><a class="nav-link" href=""><img src="{{ 'user.svg' | asset_url }}" class="img-fluid" alt="logo" /></a></li>
+            <li class="nav-item"><a class="nav-link counter_cart_item" href="/cart"><img src="{{ 'cart-bag.svg' | asset_url }}" class="img-fluid" alt="logo" /><span class="cart_item_counter_data">0</span></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+</section>
+{% if section.settings.logo != blank %}
+<style>
+  .logo-image {
+    display: block;
+    max-width: {{ section.settings.logo_max_width }}px;
+  }
+</style>
+{% endif %}
+
+{% schema %}
+  {
+    "name": "Header",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Announcement bar"
+      },
+      {
+        "type": "checkbox",
+        "id": "announcement_bar_enabled",
+        "label": "Show announcement",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "announcement_bar_home_page_only",
+        "label": "Show on home page only",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "announcement_bar_text",
+        "label": "Announcement text",
+        "default": "Announce something here"
+      },
+      {
+        "type": "url",
+        "id": "announcement_bar_link",
+        "label": "Announcement link",
+        "info": "Optional"
+      },
+      {
+        "type": "header",
+        "content": "Header"
+      },
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo image"
+      },
+      {
+        "type": "range",
+        "id": "logo_max_width",
+        "min": 50,
+        "max": 450,
+        "step": 10,
+        "unit": "px",
+        "label": "Custom logo width",
+        "default": 250
+      },
+      {
+        "type": "link_list",
+        "id": "menu",
+        "label": "Menu",
+        "default": "main-menu"
+      },
+      { 
+        "type":"header",
+        "content":"Mega menu settings"
+      },
+      { 
+        "type":"link_list",
+        "id":"first_mega_menu",
+      "label":"Select first mega menu"
+      },
+      { 
+        "type":"link_list",
+        "id":"second_mega_menu",
+        "label":"Select Second mega menu"
+      },
+      { 
+        "type":"image_picker",
+        "id":"image1",
+        "label":"Select Image"
+      },
+    {
+        "type": "text",
+        "id": "image1_text",
+        "label": "Image1 Hover Text",
+        "default": "SHOP MENS"
+      },  
+      { 
+        "type":"image_picker",
+        "id":"image2",
+        "label":"Select Image"
+      },
+    {
+        "type": "text",
+        "id": "image2_text",
+        "label": "Image2 Hover Text",
+        "default":"SHOP WOMENS"
+      }
+    ]
+  }
+{% endschema %}
